@@ -19,7 +19,7 @@ jobs:
 
             # - uses: actions/checkout@master
             # - run: npm ci
-            - run: npx github-stats-box
+            - run: npx github-stats-box@latest --svg
               env:
                   GH_TOKEN: ${{ secrets.GH_TOKEN }} # Do not edit, defined in secrets
 
