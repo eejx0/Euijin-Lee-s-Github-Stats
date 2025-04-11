@@ -1,32 +1,29 @@
 name: Update GitHub Stats Gist
-
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *' # 매 12시간마다 실행
-
+    - cron: '0 */12 * * *'
+  push:
+    branches: [master]
 jobs:
-  run:
-    runs-on: ubuntu-latest
+    run:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/setup-node@master
+              with:
+                  node-version: 16
+            # If you edit the .js files and want to run them in your GitHub Action, you need to:
+            # - uncomment the 2 following lines
+            # - replace "npx github-stats-box@1" with "npm start"
+            # N.B: Your action will not receive future updates if you do so
 
-    steps:
-      - uses: actions/checkout@v3
+            # - uses: actions/checkout@master
+            # - run: npm ci
+            - run: npx github-stats-box@1.0.0 --svg
+              env:
+                  GH_TOKEN: ${{ secrets.GH_TOKEN }} # Do not edit, defined in secrets
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      - name: Generate GitHub Stats SVG
-        run: npx github-stats-box@latest --svg --output github-stats.svg
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          GIST_ID: e9836fa3a090c327119c668add2a1519
-          ALL_COMMITS: true
-          K_FORMAT: false
-
-      - name: Upload to Gist
-        uses: exuanbo/actions-deploy-gist@v1
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          gist_id: e9836fa3a090c327119c668add2a1519
-          file_path: github-stats.svg
+                  # Edit the following environment variables
+                  GIST_ID: e9836fa3a090c327119c668add2a1519 # The ID portion from your gist url
+                  ALL_COMMITS: true # If true it will count all commits, if false it will count your last year commits
+                  K_FORMAT: false # If true, large numbers will be formatted with a "k", for example "1.5k"
