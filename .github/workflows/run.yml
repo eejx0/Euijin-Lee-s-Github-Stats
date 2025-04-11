@@ -1,23 +1,32 @@
 name: Update GitHub Stats Gist
+
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
-  push:
-    branches: [master]
+    - cron: '0 */12 * * *' # 매 12시간마다 실행
 
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm install github-stats-box@latest
-      - run: npx github-stats-box@latest --output github-stats.svg
+
+      - name: Generate GitHub Stats SVG
+        run: npx github-stats-box@latest --svg --output github-stats.svg
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GIST_ID: e9836fa3a090c327119c668add2a1519
           ALL_COMMITS: true
           K_FORMAT: false
+
+      - name: Upload to Gist
+        uses: exuanbo/actions-deploy-gist@v1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          gist_id: e9836fa3a090c327119c668add2a1519
+          file_path: github-stats.svg
